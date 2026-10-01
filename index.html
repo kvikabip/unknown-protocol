@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNKNOWN PROTOCOL</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    font-family: "Courier New", monospace;
+}
+
+body {
+    color: #00aaff;
+}
+
+/* =========================
+   START SCREEN
+========================= */
+
+#start {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 100;
+}
+
+.error {
+    color: #ff0000;
+    font-size: clamp(45px, 13vw, 110px);
+    font-weight: bold;
+    letter-spacing: 8px;
+    animation: redBlink .55s infinite;
+    text-shadow:
+        0 0 8px red,
+        0 0 25px red;
+}
+
+.warningText {
+    margin-top: 15px;
+    color: #880000;
+    font-size: 13px;
+    letter-spacing: 3px;
+}
+
+.tap {
+    margin-top: 50px;
+    color: #aaa;
+    font-size: 13px;
+    letter-spacing: 3px;
+    animation: tapBlink 1s infinite;
+}
+
+@keyframes redBlink {
+    0%, 15%, 40%, 100% { opacity: 1; }
+    20%, 35% { opacity: .2; }
+}
+
+@keyframes tapBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .25; }
+}
+
+/* =========================
+   WARNING SCREEN
+========================= */
+
+#warning {
+    position: fixed;
+    inset: 0;
+    display: none;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at center,
+        rgba(0,90,150,.16),
+        #000 70%);
+}
+
+.warningContent {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    transition: transform .08s;
+}
+
+.title {
+    color: #00aaff;
+    font-size: clamp(22px, 6vw, 45px);
+    font-weight: bold;
+    letter-spacing: 4px;
+    text-align: center;
+    text-shadow:
+        0 0 8px #008cff,
+        0 0 20px #0055ff;
+}
+
+.lines {
+    margin-top: 25px;
+    width: min(90%, 650px);
+    color: #0088cc;
+    font-size: 12px;
+    line-height: 1.9;
+}
+
+.line {
+    animation: textFlicker .15s infinite alternate;
+}
+
+@keyframes textFlicker {
+    from { opacity: .65; }
+    to { opacity: 1; }
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.progressBox {
+    width: min(85%, 600px);
+    margin-top: 30px;
+}
+
+.progressOuter {
+    height: 14px;
+    border: 1px solid #0077aa;
+    background: rgba(0,30,50,.5);
+    box-shadow: 0 0 12px #0066aa;
+}
+
+#progressBar {
+    width: 0%;
+    height: 100%;
+    background: #00aaff;
+    box-shadow:
+        0 0 8px #00aaff,
+        0 0 25px #0088ff;
+}
+
+#percent {
+    margin-top: 8px;
+    text-align: right;
+    color: #00aaff;
+    font-size: 13px;
+}
+
+/* =========================
+   MATRIX RAIN
+========================= */
+
+#matrix {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    opacity: .28;
+}
+
+/* =========================
+   SCANLINES
+========================= */
+
+.scanlines {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.025) 0px,
+        rgba(255,255,255,.025) 1px,
+        transparent 1px,
+        transparent 4px
+    );
+}
+
+/* =========================
+   GLITCH BARS
+========================= */
+
+.glitchBar {
+    position: absolute;
+    z-index: 30;
+    height: 2px;
+    background: #00aaff;
+    box-shadow: 0 0 10px #00aaff;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.redBar {
+    background: #ff0033;
+    box-shadow: 0 0 12px red;
+}
+
+@keyframes barGlitch {
+    0% {
+        opacity: 0;
+        transform: translateX(0);
+    }
+    20% {
+        opacity: 1;
+    }
+    50% {
+        opacity: .5;
+        transform: translateX(-20px);
+    }
+    80% {
+        opacity: 1;
+        transform: translateX(30px);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(0);
+    }
+}
+
+/* =========================
+   PANIC
+========================= */
+
+#panic {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: #020202;
+}
+
+.panicBox {
+    animation: panicShake .08s infinite;
+}
+
+.panicTitle {
+    color: #ff0033;
+    font-size: clamp(28px, 9vw, 70px);
+    font-weight: bold;
+    letter-spacing: 5px;
+    text-shadow:
+        0 0 10px red,
+        0 0 30px red;
+}
+
+.panicSub {
+    margin-top: 18px;
+    color: #ff4444;
+    font-size: 14px;
+    letter-spacing: 3px;
+}
+
+@keyframes panicShake {
+    0% { transform: translate(0); }
+    25% { transform: translate(-5px, 2px); }
+    50% { transform: translate(5px, -2px); }
+    75% { transform: translate(-3px, -1px); }
+    100% { transform: translate(0); }
+}
+
+/* =========================
+   SCREEN FLASH
+========================= */
+
+#flash {
+    position: fixed;
+    inset: 0;
+    z-index: 150;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- START -->
+<div id="start">
+    <div class="error">ERROR</div>
+
+    <div class="warningText">
+        SYSTEM FAILURE // UNKNOWN PROTOCOL
+    </div>
+
+    <div class="tap">
+        TAP ANYWHERE TO CONTINUE
+    </div>
+</div>
+
+<!-- WARNING -->
+<div id="warning">
+
+    <canvas id="matrix"></canvas>
+
+    <div class="warningContent" id="warningContent">
+
+        <div class="title">
+            ⚠ SYSTEM WARNING ⚠
+        </div>
+
+        <div class="lines">
+            <div class="line">> UNAUTHORIZED ACCESS DETECTED</div>
+            <div class="line">> SECURITY PROTOCOL ACTIVATED</div>
+            <div class="line">> CONNECTION: UNSTABLE</div>
+            <div class="line">> TRACE: DETECTED</div>
+            <div class="line">> SYSTEM STATUS: CRITICAL</div>
+            <div class="line">> RECOVERY PROCESS: RUNNING</div>
+        </div>
+
+        <div class="progressBox">
+
+            <div class="progressOuter">
+                <div id="progressBar"></div>
+            </div>
+
+            <div id="percent">0%</div>
+
+        </div>
+
+    </div>
+
+    <div class="scanlines"></div>
+
+    <!-- glitch bars -->
+    <div class="glitchBar"></div>
+    <div class="glitchBar"></div>
+    <div class="glitchBar redBar"></div>
+    <div class="glitchBar"></div>
+    <div class="glitchBar redBar"></div>
+
+</div>
+
+<!-- FLASH -->
+<div id="flash"></div>
+
+<!-- PANIC -->
+<div id="panic">
+    <div class="panicBox">
+        <div class="panicTitle">
+            UNKNOWN PROTOCOL
+        </div>
+
+        <div class="panicSub">
+            ⚠ SYSTEM COMPROMISED ⚠
+            <br><br>
+            SECURITY LOCK ENGAGED
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+/* =========================================
+   AUDIO — SYNTHETIC EMERGENCY SIREN
+========================================= */
+
+let audioCtx;
+let oscillator;
+let gainNode;
+let filterNode;
+let sirenTimer;
+
+function startAlarm() {
+
+    try {
+
+        audioCtx = new (
+            window.AudioContext ||
+            window.webkitAudioContext
+        )();
+
+        oscillator = audioCtx.createOscillator();
+        gainNode = audioCtx.createGain();
+        filterNode = audioCtx.createBiquadFilter();
+
+        oscillator.type = "sawtooth";
+
+        filterNode.type = "lowpass";
+        filterNode.frequency.value = 1800;
+
+        gainNode.gain.value = 0.0001;
+
+        oscillator.connect(filterNode);
+        filterNode.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        oscillator.start();
+
+        let startTime = audioCtx.currentTime;
+
+        gainNode.gain.linearRampToValueAtTime(
+            0.18,
+            startTime + 0.3
+        );
+
+        let direction = true;
+
+        sirenTimer = setInterval(() => {
+
+            if (!audioCtx) return;
+
+            const now = audioCtx.currentTime;
+
+            const low = 380;
+            const high = 900;
+
+            if (direction) {
+
+                oscillator.frequency.cancelScheduledValues(now);
+
+                oscillator.frequency.exponentialRampToValueAtTime(
+                    high,
+                    now + .55
+                );
+
+            } else {
+
+                oscillator.frequency.cancelScheduledValues(now);
+
+                oscillator.frequency.exponentialRampToValueAtTime(
+                    low,
+                    now + .55
+                );
+            }
+
+            direction = !direction;
+
+        }, 550);
+
+    } catch (e) {
+
+        console.log("Audio unavailable:", e);
+
+    }
+}
+
+
+/* =========================================
+   AUDIO GLITCH
+========================================= */
+
+function audioGlitch(intensity = 1) {
+
+    if (!audioCtx || !oscillator || !gainNode)
+        return;
+
+    const now = audioCtx.currentTime;
+
+    oscillator.frequency.cancelScheduledValues(now);
+
+    oscillator.frequency.setValueAtTime(
+        700 + Math.random() * 800 * intensity,
+        now
+    );
+
+    oscillator.frequency.exponentialRampToValueAtTime(
+        250,
+        now + .12
+    );
+
+    gainNode.gain.cancelScheduledValues(now);
+
+    gainNode.gain.setValueAtTime(
+        Math.min(.45, .16 + intensity * .12),
+        now
+    );
+
+    gainNode.gain.exponentialRampToValueAtTime(
+        .15,
+        now + .18
+    );
+}
+
+
+/* =========================================
+   AUDIO MILESTONE
+========================================= */
+
+function audioMilestone(percent) {
+
+    if (!audioCtx || !oscillator)
+        return;
+
+    const now = audioCtx.currentTime;
+
+    oscillator.frequency.cancelScheduledValues(now);
+
+    oscillator.frequency.setValueAtTime(
+        500 + percent * 5,
+        now
+    );
+
+    oscillator.frequency.exponentialRampToValueAtTime(
+        1000 + percent * 6,
+        now + .12
+    );
+
+    oscillator.frequency.exponentialRampToValueAtTime(
+        400,
+        now + .35
+    );
+
+    gainNode.gain.setValueAtTime(.35, now);
+
+    gainNode.gain.exponentialRampToValueAtTime(
+        .15,
+        now + .35
+    );
+}
+
+
+/* =========================================
+   MATRIX
+========================================= */
+
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+let width;
+let height;
+let columns;
+let drops;
+
+function resizeMatrix() {
+
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+
+    columns = Math.floor(width / 15);
+
+    drops = Array(columns).fill(1);
+
+}
+
+resizeMatrix();
+
+window.addEventListener(
+    "resize",
+    resizeMatrix
+);
+
+const chars =
+    "01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&<>[]{}";
+
+function drawMatrix() {
+
+    ctx.fillStyle = "rgba(0,0,0,.12)";
+    ctx.fillRect(0,0,width,height);
+
+    ctx.fillStyle = "#0088cc";
+    ctx.font = "14px monospace";
+
+    for (let i = 0; i < drops.length; i++) {
+
+        const char =
+            chars[Math.floor(
+                Math.random() * chars.length
+            )];
+
+        ctx.fillText(
+            char,
+            i * 15,
+            drops[i] * 15
+        );
+
+        if (
+            drops[i] * 15 > height &&
+            Math.random() > .975
+        ) {
+            drops[i] = 0;
+        }
+
+        drops[i]++;
+    }
+
+}
+
+setInterval(drawMatrix, 40);
+
+
+/* =========================================
+   GLITCH EFFECT
+========================================= */
+
+const warningContent =
+    document.getElementById("warningContent");
+
+const bars =
+    document.querySelectorAll(".glitchBar");
+
+const flash =
+    document.getElementById("flash");
+
+function heavyGlitch(intensity = 1) {
+
+    audioGlitch(intensity);
+
+    /* screen tear */
+
+    warningContent.style.transform =
+        `translateX(${(Math.random() - .5) * 35 * intensity}px)
+         skewX(${(Math.random() - .5) * 5 * intensity}deg)`;
+
+    /* random bars */
+
+    bars.forEach(bar => {
+
+        bar.style.top =
+            Math.random() * 100 + "%";
+
+        bar.style.width =
+            (20 + Math.random() * 80) + "%";
+
+        bar.style.left =
+            Math.random() * 30 - 15 + "%";
+
+        bar.style.animation =
+            "barGlitch .12s linear";
+
+    });
+
+    /* flash */
+
+    flash.style.opacity =
+        Math.random() * .16 * intensity;
+
+    setTimeout(() => {
+
+        warningContent.style.transform =
+            "translateX(0) skewX(0)";
+
+        flash.style.opacity = 0;
+
+        bars.forEach(bar => {
+            bar.style.animation = "none";
+        });
+
+    }, 120);
+
+}
+
+
+/* =========================================
+   RANDOM GLITCH
+========================================= */
+
+let randomGlitchTimer;
+
+function randomGlitches() {
+
+    randomGlitchTimer =
+        setInterval(() => {
+
+            if (
+                document.getElementById("warning")
+                    .style.display !== "none"
+            ) {
+
+                if (Math.random() < .7) {
+
+                    heavyGlitch(
+                        .5 + Math.random() * .7
+                    );
+
+                }
+
+            }
+
+        }, 250);
+
+}
+
+
+/* =========================================
+   START
+========================================= */
+
+document.getElementById("start")
+.addEventListener("click", begin);
+
+
+function begin() {
+
+    document.getElementById("start")
+        .style.display = "none";
+
+    document.getElementById("warning")
+        .style.display = "block";
+
+    startAlarm();
+
+    randomGlitches();
+
+    startLoading();
+}
+
+
+/* =========================================
+   LOADING 0 → 100
+   ~15 SECONDS
+========================================= */
+
+function startLoading() {
+
+    let progress = 0;
+    let lastMilestone = 0;
+
+    const interval =
+        setInterval(() => {
+
+            progress += 0.72;
+
+            if (progress >= 100) {
+
+                progress = 100;
+
+                clearInterval(interval);
+
+                document.getElementById(
+                    "progressBar"
+                ).style.width = "100%";
+
+                document.getElementById(
+                    "percent"
+                ).textContent = "100%";
+
+                heavyGlitch(2);
+
+                audioMilestone(100);
+
+                setTimeout(
+                    showPanic,
+                    1000
+                );
+
+                return;
+            }
+
+            document.getElementById(
+                "progressBar"
+            ).style.width =
+                progress + "%";
+
+            document.getElementById(
+                "percent"
+            ).textContent =
+                Math.floor(progress) + "%";
+
+
+            /* milestone every 10% */
+
+            const milestone =
+                Math.floor(progress / 10) * 10;
+
+            if (
+                milestone > lastMilestone &&
+                milestone > 0
+            ) {
+
+                lastMilestone = milestone;
+
+                heavyGlitch(1.6);
+
+                audioMilestone(
+                    milestone
+                );
+            }
+
+        }, 100);
+}
+
+
+/* =========================================
+   PANIC SCREEN
+   STAYS 3 SECONDS
+========================================= */
+
+function showPanic() {
+
+    document.getElementById("warning")
+        .style.display = "none";
+
+    document.getElementById("panic")
+        .style.display = "flex";
+
+    /* final siren spike */
+
+    if (audioCtx && oscillator) {
+
+        const now = audioCtx.currentTime;
+
+        oscillator.frequency.cancelScheduledValues(now);
+
+        oscillator.frequency.setValueAtTime(
+            900,
+            now
+        );
+
+        oscillator.frequency.exponentialRampToValueAtTime(
+            1500,
+            now + .25
+        );
+
+        gainNode.gain.setValueAtTime(
+            .4,
+            now
+        );
+
+        gainNode.gain.exponentialRampToValueAtTime(
+            .15,
+            now + .8
+        );
+    }
+
+    setTimeout(() => {
+
+        stopAlarm();
+
+        document.getElementById("panic")
+            .style.display = "none";
+
+    }, 3000);
+}
+
+
+/* =========================================
+   STOP AUDIO
+========================================= */
+
+function stopAlarm() {
+
+    clearInterval(sirenTimer);
+    clearInterval(randomGlitchTimer);
+
+    if (oscillator) {
+
+        try {
+            oscillator.stop();
+        } catch(e) {}
+
+    }
+
+    if (audioCtx) {
+
+        try {
+            audioCtx.close();
+        } catch(e) {}
+
+    }
+
+    oscillator = null;
+    audioCtx = null;
+}
+
+</script>
+
+</body>
+</html>
